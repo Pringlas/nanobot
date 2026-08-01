@@ -10,6 +10,7 @@ SETUP_SPEC = ChannelSetupSpec(
         "consentGranted": field("bool", default=False),
         "imapHost": field(),
         "imapPort": field("int", default=993),
+        "imapTimeoutSeconds": field("int", default=60),
         "imapUsername": field(),
         "imapPassword": field("secret"),
         "smtpHost": field(),

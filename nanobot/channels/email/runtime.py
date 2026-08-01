@@ -43,6 +43,7 @@ class EmailConfig(Base):
     imap_password: str = ""
     imap_mailbox: str = "INBOX"
     imap_use_ssl: bool = True
+    imap_timeout_seconds: int = 60
 
     smtp_host: str = ""
     smtp_port: int = 587
@@ -561,10 +562,13 @@ class EmailChannel(BaseChannel):
             self._close_imap_client(client)
 
     def _open_imap_client(self, mailbox: str, *, missing_mailbox_ok: bool = False) -> Any | None:
+        timeout = max(5, int(self.config.imap_timeout_seconds))
         if self.config.imap_use_ssl:
-            client: Any = imaplib.IMAP4_SSL(self.config.imap_host, self.config.imap_port)
+            client: Any = imaplib.IMAP4_SSL(
+                self.config.imap_host, self.config.imap_port, timeout=timeout
+            )
         else:
-            client = imaplib.IMAP4(self.config.imap_host, self.config.imap_port)
+            client = imaplib.IMAP4(self.config.imap_host, self.config.imap_port, timeout=timeout)
 
         try:
             client.login(self.config.imap_username, self.config.imap_password)
